@@ -213,13 +213,30 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
+    var isTrue = true;
+    var callback = (iterator === undefined) ? _.identity : iterator;
+    _.each(collection, function(val) {
+      if (!callback(val)) {
+        isTrue = false;
+      } 
+    });
+    return isTrue;
     // TIP: Try re-using reduce() here.
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
+    var callback = (iterator === undefined) ? _.identity : iterator;
+    var allFalse = _.every(collection, function(val) {
+      return !callback(val);
+    });
+    
+    if (allFalse) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
 
@@ -242,11 +259,27 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        obj[key] = source[key];
+      }
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (!obj.hasOwnProperty(key)) {
+          obj[key] = source[key];
+        }
+      }
+    }
+    return obj;
   };
 
 
@@ -290,6 +323,18 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var cache = {};
+    return function() {
+      var args = JSON.stringify(arguments);
+      if (cache.hasOwnProperty(args)) {
+        return cache[args];
+      } else {
+        var result = func.apply(this, arguments);
+        cache[args] = result;
+        return result;
+      }
+    };
+      
   };
 
   // Delays a function for the given number of milliseconds, and then calls
