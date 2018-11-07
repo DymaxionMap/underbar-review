@@ -363,6 +363,39 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    // Create indices array
+    var createInd = function(len) {
+      var ind = [];
+      for (var i = 0; i < len; i++) {
+        ind.push(i);
+      }
+      return ind;
+    };
+    
+    // Create random indices array
+    var createRandInd = function(arr) {
+      var randIndices = [];
+      while (arr.length > 0) {
+        var index = Math.floor(Math.random() * arr.length);
+        randIndices.push(arr[index]);
+        arr.splice(index, 1);
+      }
+      return randIndices;
+    };
+
+    // Create the random values array
+    var randValues = function(randIndices) {
+      var randArr = [];
+      for (var i = 0; i < randIndices.length; i++) {
+        randArr.push(array[randIndices[i]]);
+      }
+      return randArr;
+    };
+
+    var indices = createInd(array.length);
+    var randIndices = createRandInd(indices);
+    return randValues(randIndices);
+
   };
 
 
